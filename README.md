@@ -1,5 +1,9 @@
 # httpstat
 
+This is another test.
+
+This is a test to see if pull and push works.
+
 curl statistics made simple.
 
 ![screenshot](screenshot.png)
