@@ -40,23 +40,25 @@ curl_format = """{
 
 https_template = """
   DNS Lookup   TCP Connection   SSL Handshake   Server Processing   Content Transfer
-[   {a0000}  |     {a0001}    |    {a0002}    |      {a0003}      |      {a0004}     ]
+[   {a0000}  |     {a0001}    |    {a0002}    |      {a0003}      |      {a0005}     ]
              |                |               |                   |                  |
     namelookup:{b0000}        |               |                   |                  |
                         connect:{b0001}       |                   |                  |
                                     pretransfer:{b0002}           |                  |
                                                       starttransfer:{b0003}          |
-                                                                                 total:{b0004}
+                                                                                 total:{b0005}
 """[1:]
 
 http_template = """
-  DNS Lookup   TCP Connection   Server Processing   Content Transfer
-[   {a0000}  |     {a0001}    |      {a0003}      |      {a0004}     ]
-             |                |                   |                  |
-    namelookup:{b0000}        |                   |                  |
-                        connect:{b0001}           |                  |
-                                      starttransfer:{b0003}          |
-                                                                 total:{b0004}
+  Appconnection    DNS Lookup   TCP Connection   SSL Handshake   Server Processing   Content Transfer  
+[   {a0004}     |   {a0000}   |     {a0001}    |    {a0002}    |      {a0003}      |      {a0005}     ]
+                |             |                |               |                   |                  |
+       namelookup:{b0004}     |                |               |                   |                  |
+                       connect:{b0000}         |               |                   |                  |
+                                       appconnect:{b0001}      |                   |                  |
+                                                       pretransfer:{b0002}         |                  |
+                                                                          starttransfer:{b0003}       |
+                                                                                                total:{b0005}
 """[1:]
 
 
@@ -186,6 +188,7 @@ def main():
         range_ssl=d['time_pretransfer'] - d['time_connect'],
         range_server=d['time_starttransfer'] - d['time_pretransfer'],
         range_transfer=d['time_total'] - d['time_starttransfer'],
+        range_appconnection=d['time_appconnect'],
     )
 
     # print header & body summary
@@ -241,13 +244,15 @@ def main():
         a0001=fmta(d['range_connection']),
         a0002=fmta(d['range_ssl']),
         a0003=fmta(d['range_server']),
-        a0004=fmta(d['range_transfer']),
+        a0004=fmta(d['range_appconnection']),
+        a0005=fmta(d['range_transfer']),
         # b
         b0000=fmtb(d['time_namelookup']),
         b0001=fmtb(d['time_connect']),
         b0002=fmtb(d['time_pretransfer']),
         b0003=fmtb(d['time_starttransfer']),
-        b0004=fmtb(d['time_total']),
+        b0004=fmtb(d['time_appconnect']),
+        b0005=fmtb(d['time_total']),
     )
     print()
     print(stat)
